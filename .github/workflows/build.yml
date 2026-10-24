@@ -1,0 +1,72 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: microsoft/setup-msbuild@v2
+
+      - name: Build (Release, Win32)
+        run: msbuild StudioMode.vcxproj /m /p:Configuration=Release /p:Platform=Win32
+
+      - name: Check the DLL is 32-bit and exports the SKSE entry points
+        shell: pwsh
+        run: |
+          $dll = "build\StudioMode.dll"
+          $bytes = [System.IO.File]::ReadAllBytes($dll)
+          $pe = [BitConverter]::ToInt32($bytes, 0x3C)
+          $machine = [BitConverter]::ToUInt16($bytes, $pe + 4)
+          if ($machine -ne 0x14C) { throw "$dll is not an x86 DLL (machine $machine)" }
+          $text = [System.Text.Encoding]::ASCII.GetString($bytes)
+          foreach ($name in @("SKSEPlugin_Query", "SKSEPlugin_Load")) {
+            if (-not $text.Contains($name)) { throw "$dll is missing export $name" }
+          }
+          Write-Host "$dll : x86, $($bytes.Length) bytes, exports present"
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $version = if ("${{ github.ref_type }}" -eq "tag") { "${{ github.ref_name }}".TrimStart("v") } else { "dev" }
+          "VERSION=$version" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+          # mod-manager layout: the archive root is the Data folder
+          $out = "package\SKSE\Plugins"
+          New-Item -ItemType Directory -Force $out | Out-Null
+          Copy-Item build\StudioMode.dll $out
+          Copy-Item dist\Data\SKSE\Plugins\StudioMode.ini $out
+          Copy-Item README.md package\StudioMode-README.md
+          Copy-Item LICENSE package\StudioMode-LICENSE.txt
+          Copy-Item NOTICE.md package\StudioMode-NOTICE.md
+          Compress-Archive -Path package\* -DestinationPath "StudioMode-$version.zip" -Force
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: StudioMode-${{ env.VERSION }}
+          path: package
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: StudioMode-pdb
+          path: build\StudioMode.pdb
+
+      # A tag such as v1.0.0 publishes a GitHub release with the zip.
+      - name: Publish the release
+        if: github.ref_type == 'tag'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" "StudioMode-$env:VERSION.zip" `
+            --title "Studio Mode $env:VERSION" `
+            --notes "See [CHANGELOG.md](CHANGELOG.md). Skyrim Legendary Edition 1.9.32.0.8 and SKSE 1.7.3 only. Install with a mod manager, or extract into Skyrim\Data."

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Release|Win32"><Configuration>Release</Configuration><Platform>Win32</Platform></ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{6B1F6C1E-4E2A-4C59-9C3B-2D0B7A4F5E11}</ProjectGuid>
+    <RootNamespace>StudioMode</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup>
+    <ExternRoot>$(ProjectDir)extern\</ExternRoot>
+    <OutDir>$(ProjectDir)build\</OutDir>
+    <IntDir>$(ProjectDir)build\obj\</IntDir>
+    <TargetName>StudioMode</TargetName>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <!-- /EHa: destructors also run when a fault guard (__except) unwinds -->
+      <ExceptionHandling>Async</ExceptionHandling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(ExternRoot)skse-le;$(ExternRoot)skse-le\skse;$(ExternRoot)imgui;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>common/IPrefix.h</ForcedIncludeFiles>
+      <!-- diagnostic build: /p:ExtraDefines=STUDIOMODE_LOG writes Documents\My Games\Skyrim\SKSE\StudioMode.log -->
+      <PreprocessorDefinitions>$(ExtraDefines);NDEBUG;WIN32;RUNTIME;RUNTIME_VERSION=0x09200000;NOMINMAX;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <ModuleDefinitionFile>src\exports.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+      <AdditionalDependencies>d3d9.lib;windowscodecs.lib;ole32.lib;uuid.lib;shell32.lib;user32.lib;comdlg32.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Character.cpp" />
+    <ClCompile Include="src\Config.cpp" />
+    <ClCompile Include="src\Engine.cpp" />
+    <ClCompile Include="src\Filters.cpp" />
+    <ClCompile Include="src\Forms.cpp" />
+    <ClCompile Include="src\Hooks.cpp" />
+    <ClCompile Include="src\Icons.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\PhotoMode.cpp" />
+    <ClCompile Include="src\Screenshot.cpp" />
+    <ClCompile Include="src\Verify.cpp" />
+    <ClCompile Include="$(ExternRoot)skse-le\skse\skse\SafeWrite.cpp" />
+    <ClCompile Include="$(ExternRoot)skse-le\common\IDebugLog.cpp" />
+    <ClCompile Include="$(ExternRoot)skse-le\common\IErrors.cpp" />
+    <ClCompile Include="$(ExternRoot)skse-le\common\IFileStream.cpp" />
+    <ClCompile Include="$(ExternRoot)skse-le\common\IDataStream.cpp" />
+    <ClCompile Include="$(ExternRoot)skse-le\common\ITypes.cpp" />
+    <ClCompile Include="$(ExternRoot)imgui\imgui.cpp"><ForcedIncludeFiles></ForcedIncludeFiles></ClCompile>
+    <ClCompile Include="$(ExternRoot)imgui\imgui_draw.cpp"><ForcedIncludeFiles></ForcedIncludeFiles></ClCompile>
+    <ClCompile Include="$(ExternRoot)imgui\imgui_tables.cpp"><ForcedIncludeFiles></ForcedIncludeFiles></ClCompile>
+    <ClCompile Include="$(ExternRoot)imgui\imgui_widgets.cpp"><ForcedIncludeFiles></ForcedIncludeFiles></ClCompile>
+    <ClCompile Include="$(ExternRoot)imgui\backends\imgui_impl_dx9.cpp"><ForcedIncludeFiles></ForcedIncludeFiles></ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Character.h" />
+    <ClInclude Include="src\Config.h" />
+    <ClInclude Include="src\Engine.h" />
+    <ClInclude Include="src\Filters.h" />
+    <ClInclude Include="src\Forms.h" />
+    <ClInclude Include="src\Hooks.h" />
+    <ClInclude Include="src\Icons.h" />
+    <ClInclude Include="src\InputEvents.h" />
+    <ClInclude Include="src\Log.h" />
+    <ClInclude Include="src\Offsets.h" />
+    <ClInclude Include="src\PhotoMode.h" />
+    <ClInclude Include="src\Screenshot.h" />
+    <ClInclude Include="src\Verify.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

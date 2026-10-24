@@ -1,0 +1,33 @@
+name: Bug report
+description: Something does not work in Studio Mode
+labels: [bug]
+body:
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Studio Mode, Skyrim LE (1.9.32.0.8?) and SKSE (1.7.3?)
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Other mods
+      description: ENB / ReShade, UI mods, input mods, other SKSE plugins. Does it still happen with them disabled?
+  - type: textarea
+    id: logs
+    attributes:
+      label: Log, screenshot or video
+      description: Release builds write no log. A diagnostic build (STUDIOMODE_LOG) writes Documents\My Games\Skyrim\SKSE\StudioMode.log
